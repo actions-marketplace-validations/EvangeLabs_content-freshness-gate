@@ -1,0 +1,75 @@
+name: content-freshness-gate
+description: Detect stale markdown docs and create/close actionable GitHub issues.
+author: content-freshness-gate
+
+inputs:
+  paths:
+    description: "Comma-separated glob patterns for markdown files (for example: docs/**/*.md,README.md)"
+    required: true
+  stale-days:
+    description: File age in days after which content is considered stale.
+    required: false
+    default: "90"
+  warn-days:
+    description: File age in days after which content is considered warning-level.
+    required: false
+    default: "60"
+  max-issues-per-run:
+    description: Maximum number of new issues to create per run.
+    required: false
+    default: "5"
+  create-issues:
+    description: Whether to create issues for stale/warning files.
+    required: false
+    default: "true"
+  assign-last-author:
+    description: Whether to try assigning issues to the latest author.
+    required: false
+    default: "true"
+  close-on-update:
+    description: Whether to close managed issues after the file is updated.
+    required: false
+    default: "true"
+  github-model:
+    description: Model identifier to mention in suggestion text (metadata only).
+    required: false
+    default: "gpt-4o-mini"
+  dry-run:
+    description: If true, no GitHub write operations are performed.
+    required: false
+    default: "false"
+  debug:
+    description: Enable verbose debug logs.
+    required: false
+    default: "false"
+
+outputs:
+  files-scanned:
+    description: Number of files scanned.
+  stale-detected:
+    description: Number of stale files detected.
+  warning-detected:
+    description: Number of warning files detected.
+  issues-created:
+    description: Number of issues created.
+  issues-closed:
+    description: Number of issues closed.
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    INPUT_PATHS: ${{ inputs.paths }}
+    INPUT_STALE_DAYS: ${{ inputs.stale-days }}
+    INPUT_WARN_DAYS: ${{ inputs.warn-days }}
+    INPUT_MAX_ISSUES_PER_RUN: ${{ inputs.max-issues-per-run }}
+    INPUT_CREATE_ISSUES: ${{ inputs.create-issues }}
+    INPUT_ASSIGN_LAST_AUTHOR: ${{ inputs.assign-last-author }}
+    INPUT_CLOSE_ON_UPDATE: ${{ inputs.close-on-update }}
+    INPUT_GITHUB_MODEL: ${{ inputs.github-model }}
+    INPUT_DRY_RUN: ${{ inputs.dry-run }}
+    INPUT_DEBUG: ${{ inputs.debug }}
+
+branding:
+  icon: file-text
+  color: blue
